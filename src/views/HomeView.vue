@@ -2,6 +2,7 @@
   import { ref, useTemplateRef, onMounted, watch } from 'vue';
   import vert from '../shaders/vert.glsl';
   import frag from '../shaders/frag.glsl';
+  import '../game/ecs.js';
 
   var gx = 0, gy = 0.1;
 
@@ -71,6 +72,7 @@
     gl.value.clearColor(0, 0, 0, 1);
     gl.value.clear(gl.value.COLOR_BUFFER_BIT);
     gl.value.drawArrays(gl.value.POINTS, 0, points.length / 4);
+    gameLoop();
   }, 1 / 60);
 
   function draw(event) {
@@ -85,11 +87,20 @@
       points[i + 3] = r * Math.sin(theta) * 2;
     }
   }
+  
+  var filterStrength = 20;
+  var frameTime = ref(0), lastLoop = new Date, thisLoop;
 
+  function gameLoop(){
+    var thisFrameTime = (thisLoop=new Date) - lastLoop;
+    frameTime.value += (thisFrameTime - frameTime.value) / filterStrength;
+    lastLoop = thisLoop;
+  }
 </script>
 
 <template>
   <main>
+    <h1>{{(1000 / frameTime).toFixed(1) + " fps"}}</h1>
     <canvas width="500" height="500" ref="cv" @click="(event) => draw(event)"></canvas>
     <br style="user-select: none;"/>
     <input v-model="count"/>
