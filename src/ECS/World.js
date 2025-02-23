@@ -1,12 +1,7 @@
-import TestComponent1 from '../TEST/TestComponent1.js';
-import TestComponent2 from '../TEST/TestComponent2.js';
-
 class DataPool
 {   
     datapool = new Map();// [entityid, componentdata]    
 }
-
-
 
 
 export default class World
@@ -20,11 +15,11 @@ export default class World
       
     }
 
-    RegisterComponentPool
+    
        
     AddEntity() 
     {     
-        this.world[this.i] = [0,0]; 
+        this.world[this.i] = [0,0,0,0]; 
         this.i++;   
     }
 
@@ -62,6 +57,34 @@ export default class World
             return this.componentpool.get(componentid).get(entid);
         }
     }
+
+
+    GetFiltred(filter)
+    {
+        var pool = []
+        var poolit = 0
+        var no = -1;
+       
+        for(let entid =0; entid<this.world.length;entid++)
+        {
+            for(let componentid =0; componentid < filter.length;componentid++)
+            {
+                if(this.world[entid][filter[componentid]] != 1)
+                {  
+                  
+                    no = entid;        
+                    break;
+                }
+            }
+            if(entid != no)
+            {
+                pool[poolit] = entid;
+                poolit++;
+            }
+        }
+        return pool;
+    }
+
 
 
 
