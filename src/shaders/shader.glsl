@@ -42,18 +42,20 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy * 2.0 - 1.0;
     uv.x *= u_resolution.x / u_resolution.y;
     
-    vec3 lo = vec3(0,0, 0.5);
-    vec3 ro = vec3(0,0,-1);
-    vec3 rd = normalize(vec3(uv, 1.0));
+    // vec3 lo = vec3(0,0, 0.5);
+    // vec3 ro = vec3(0,0,-1);
+    // vec3 rd = normalize(vec3(uv, 1.0));
 
-    float distance = raymarch(ro, rd);
+    // float distance = raymarch(ro, rd);
 
-    vec3 normal = normalize(ro + distance * rd);
+    // vec3 normal = normalize(ro + distance * rd);
 
-    vec3 color = vec3(dot(normalize( lo), normal));
+    // vec3 color = vec3(dot(normalize( lo), normal));
 
-    if (distance < 50.0) {
-        gl_FragColor = vec4(color, 1.0);
+    
+
+    if (uv.x == 0.0) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
     } else {
         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     }

@@ -2,11 +2,11 @@
   import { ref, useTemplateRef, onMounted, watch } from 'vue';
   import vert from '../shaders/vert.glsl';
   import frag from '../shaders/frag.glsl';
-  import '../game/ecs.js';
+  import '../game/leopotam'
 
   var gx = 0, gy = 0.1;
 
-  const count = ref(1000);
+  const count = ref(1);
   const cv = useTemplateRef('cv');
   const gl = ref(null);
   var points = new Float32Array(count.value * 4);
@@ -16,6 +16,7 @@
   })
   
   onMounted(() => {
+    // gl.value = cv.value.getContext('2d');
     gl.value = cv.value.getContext('webgl');
 
     const program = gl.value.createProgram();
@@ -68,6 +69,12 @@
   }, 1 / 1);
 
   setInterval(() => {
+    // gl.value.fillStyle = 'black';
+    // gl.value.fillRect(0, 0, cv.value.width, cv.value.height);
+    // for (let i = 0; i < points.length - 3; i += 4) {
+    //   gl.value.fillStyle = 'white';
+    //   gl.value.fillRect(points[i] + cv.value.width / 2, points[i + 1] + cv.value.height / 2, 1, 1);
+    // }
     gl.value.bufferData(gl.value.ARRAY_BUFFER, points, gl.value.DYNAMIC_DRAW);
     gl.value.clearColor(0, 0, 0, 1);
     gl.value.clear(gl.value.COLOR_BUFFER_BIT);

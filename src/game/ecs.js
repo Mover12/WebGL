@@ -1,60 +1,66 @@
-var entitiesList = [];
-var componentsList = [];
+// var entities = [];
+// var entitiesList = [];
+// var componentsList = [];
 
-class Entity {
-    id;
-    constructor(id) {
-        this.id = id;
-    }
-    addComponet(component) {
-        if (!componentsList[this.id]) {
-            componentsList[this.id] = new Map();
-        }
-        if (!entitiesList[component.id]) {
-            entitiesList[component.id] = new Set();
-        }
-        componentsList[this.id][component.id] = component;
-        entitiesList[component.id].add(this.id);
-    }
-}
-class Component {
-    id;
-    constructor(id) {
-        this.id = id;
-    }
-}
+// class Entity {
+//     id;
+//     components=0;
+//     constructor(id) {
+//         this.id = id;
+//     }
+//     addComponet(component) {
+//         if (!componentsList[this.id]) {
+//             componentsList[this.id] = new Map();
+//         }
+//         if (!entitiesList[component.id]) {
+//             entitiesList[component.id] = new Set();
+//         }
+//         componentsList[this.id][component.id] = component;
+//         entitiesList[component.id].add(this.id);
+//         this.components |= (1 << component.id);
+//         for(let i = 0; i < filters.length; i++) {
+//             if ((this.components & filters[i]) == filters[i]) {
+//                 filtered[i].add(this.id);
+//             } else {
+//                 filtered[i].delete(this.id);
+//             }
+//         }
+//     }
+// }
+// class Component {
+//     id;
+//     constructor(id) {
+//         this.id = id;
+//     }
+// }
 
 
-class TestComponent extends Component {
-    test=0;
-}
+// class TestComponent extends Component {
+//     test=0;
+// }
+// var filtered = [new Set()];
+// var filters = [3];
+// function init() {
+//     for (var i = 0; i < 1; i++) {
+//         entities.push(new Entity(i));
+//     }
+// }
 
+// var compid=0;
+// function update() {
+//     compid++;
+//     for (var i = 0; i < entities.length; i++) {
+//         entities[i].addComponet(new TestComponent(compid));
+//     }
+// }
 
-function init() {
-    for (var i = 0; i < 500000; i++) {
-        var entity = new Entity(i);
-        entity.addComponet(new TestComponent(0));
-        entity.addComponet(new TestComponent(1));
-        entity.addComponet(new TestComponent(2));
-        entity.addComponet(new TestComponent(3));
-    }
-}
-function update() {
-    for(var entitiy of entitiesList[0].intersection(entitiesList[1]).intersection(entitiesList[2]).intersection(entitiesList[3])) {
-        componentsList[entitiy][0].test++;
-        componentsList[entitiy][1].test++;
-        componentsList[entitiy][2].test++;
-        componentsList[entitiy][3].test++;
-    }
-}
+// function main() {
+//     init()
 
-function main() {
-    init()
+//     setInterval(() => {
+//         update();
+//     }, 1/60);
 
-    setInterval(() => {
-        update();
-    }, 1/60);
+// }
 
-}
-
-main();
+// main();
