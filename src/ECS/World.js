@@ -4,12 +4,17 @@ class DataPool
 }
 
 
+
 export default class World
 {
     i=0;
     world= new Array();    
     componentpool = new Map(); // [componentid, datapool]
   
+
+    filterpool = [1,3,15,15,15]; 
+    
+    filteredpool = [new Set(),new Set(),new Set(),new Set(),new Set()]
 
     constructor() {
       
@@ -19,19 +24,40 @@ export default class World
        
     AddEntity() 
     {     
-        this.world[this.i] = [0,0,0,0]; 
+        this.world[this.i] = 0; 
         this.i++;   
     }
 
     AddComponent(entid,componentid,typedata) 
     {   
-        this.world[entid][componentid] = 1; 
+        this.world[entid] |= (1<<componentid);
+        
+        for(let fid =0; fid<this.filterpool.length;fid++)
+        {
+            if((this.filterpool[fid] & this.world[entid]) ==  this.filterpool[fid])
+            {
+                this.filteredpool[fid].add(entid)
+            }
+        }
+
         this.AddComponentData(entid,componentid,typedata);       
     }
 
     RemoveComponent(entid,componentid) 
     {   
-        this.world[entid][componentid] = 0; 
+        
+        this.world[entid] ^= (1<<componentid); 
+
+        for(let fid =0; fid<this.filterpool.length;fid++)
+        {
+                if((this.filterpool[fid] & this.world[entid]) !=  this.filterpool[fid])
+                {
+                    this.filteredpool[fid].delete(entid)
+                }
+        }
+        
+         
+
         this.RemoveComponentData(entid,componentid)         
     }
    
@@ -47,7 +73,7 @@ export default class World
 
     RemoveComponentData(entid,componentid)
     {      
-        this.componentpool.get(componentid).delete(entid)
+        //this.componentpool.get(componentid).delete(entid).delete()
     }
 
     GetComponentData(entid,componentid)
@@ -60,33 +86,9 @@ export default class World
 
 
     GetFiltred(filter)
-    {
-        var pool = []
-        var poolit = 0
-        var no = -1;
-       
-        for(let entid =0; entid<this.world.length;entid++)
-        {
-            for(let componentid =0; componentid < filter.length;componentid++)
-            {
-                if(this.world[entid][filter[componentid]] != 1)
-                {  
-                  
-                    no = entid;        
-                    break;
-                }
-            }
-            if(entid != no)
-            {
-                pool[poolit] = entid;
-                poolit++;
-            }
-        }
-        return pool;
+    {       
+        return this.filteredpool[filter];
     }
-
-
-
 
     DebugEntity() 
     {   

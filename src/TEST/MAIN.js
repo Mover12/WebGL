@@ -1,5 +1,6 @@
 import World from '../ECS/World.js';
 
+
 class TestComponent0
 {  
    test=0;    
@@ -19,32 +20,41 @@ class TestComponent3
 
 var _world = new World();
 
-    for (let i = 0; i<10; i++) 
-    {
-        _world.AddEntity();  
-        _world.AddComponent(i,0,new TestComponent0);
-        _world.AddComponent(i,1,new TestComponent1);
-        _world.AddComponent(i,2,new TestComponent2);
-        _world.AddComponent(i,3,new TestComponent3);
-    }
-
-
-var filter = [0,1,2,3];
-
-while(true)
+   for (let i = 0; i<10000; i++) 
+   {
+      _world.AddEntity();  
+      _world.AddComponent(i,0,new TestComponent0);
+      _world.AddComponent(i,1,new TestComponent1);
+      _world.AddComponent(i,2,new TestComponent2);
+      _world.AddComponent(i,3,new TestComponent3);
+   }
+   
+function update()
 {
-    
-
-    for (var it = 0; it <_world.GetFiltred(filter).length; it++)
-    {
-       _world.GetComponentData(_world.GetFiltred(filter)[it],0).test++;
-       _world.GetComponentData(_world.GetFiltred(filter)[it],1).test++; 
-       _world.GetComponentData(_world.GetFiltred(filter)[it],2).test++;
-       _world.GetComponentData(_world.GetFiltred(filter)[it],3).test++;   
-    } 
-       
+  
+   
+   for (var e of _world.GetFiltred(1))
+   {
+      _world.RemoveComponent(e,1);
+      var c1 = _world.GetComponentData(e,1)
+   } 
+   for (var e of _world.GetFiltred(0))
+   {
+      _world.AddComponent(e,1,new TestComponent1);         
+   } 
+ 
 }
 
+
+function main() 
+{
+   setInterval(() => { 
+      update();
+    }, 1 / 60);
+
+}
+
+main();
 
 
 
