@@ -1,0 +1,13 @@
+class EcsWorld {
+    
+    Component
+    
+    
+    
+    init
+
+
+
+
+
+}
