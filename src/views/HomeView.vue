@@ -1,12 +1,8 @@
 <script setup>
   import { ref, useTemplateRef, onMounted, watch } from 'vue';
-<<<<<<< Updated upstream
-  import '../TEST/MAIN.js';
-  import '../TEST/index'
-=======
   import vert from '../shaders/vert.glsl';
   import frag from '../shaders/frag.glsl';
-  import '../game/test.ts'
+  import '../ECS/test'
 
   var gx = 0, gy = 0.1;
 
@@ -98,7 +94,6 @@
       points[i + 3] = r * Math.sin(theta) * 2;
     }
   }
->>>>>>> Stashed changes
   
   var filterStrength = 20;
   var frameTime = ref(0), lastLoop = new Date, thisLoop;
@@ -108,16 +103,13 @@
     frameTime.value += (thisFrameTime - frameTime.value) / filterStrength;
     lastLoop = thisLoop;
   }
-  setInterval(() => { 
-    gameLoop();
-  }, 1 / 60);
-
 </script>
 
 <template>
   <main>
     <h1>{{(1000 / frameTime).toFixed(1) + " fps"}}</h1>
+    <canvas width="500" height="500" ref="cv" @click="(event) => draw(event)"></canvas>
+    <br style="user-select: none;"/>
+    <input v-model="count"/>
   </main>
 </template>
-
-
