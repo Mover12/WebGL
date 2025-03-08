@@ -15,7 +15,7 @@ class EcsAspect {
     Incluede<T>(type: classType): EcsPool<T> {
         var pool: EcsPool<T> = this.GetPool(type);
         if (!this._world.aspectMasksIncluede[this.constructor.name]) {
-            this._world.aspectMasksIncluede[this.constructor.name] = [];
+            this._world.aspectMasksIncluede[this.constructor.name] = new ArrayBuffer();
         }
         this._world.aspectMasksIncluede[this.constructor.name][Math.floor(this._world.components[type.name] / 32)] |= (1 << this._world.components[type.name] % 32);
         return pool;

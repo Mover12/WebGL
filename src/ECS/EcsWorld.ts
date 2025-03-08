@@ -5,14 +5,15 @@ class EcsWorld {
     components: Map<string, number> = new Map<string, number>();
     aspects: Map<string, Array<string>> = new Map<string, Array<string>>();
     componentsCount: number = 0;
-    aspectMasksIncluede: Map<string, Array<number>> = new Map<string, Array<number>>();
-    aspectMasksExcluede: Map<string, Array<number>> = new Map<string, Array<number>>();
-    entitiesMask: Array<number>[] = new Array<Array<number>>();
+    aspectMasksIncluede: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
+    aspectMasksExcluede: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
+    entitiesMask: ArrayBuffer[] = new Array<ArrayBuffer>();
     entitiesCount: number = 0;
+
     
     
     NewEntity(): number {
-        this.entitiesMask[this.entitiesCount] = [];
+        this.entitiesMask[this.entitiesCount] = new ArrayBuffer(Math.ceil(this.componentsCount / 32) * 4);
         return this.entitiesCount++;
     }
 
@@ -23,47 +24,31 @@ class EcsWorld {
         var minLenghtPool: IEcsPool = this.pool[this.aspects[type][0]];
         var minComponentLenght: number = this.pool[this.aspects[type][0]].entities.length;
 
-        var maxLenghtPool: IEcsPool;
-        var maxComponentLenght: number = 0;
-
         for (const componentName of this.aspects[type]) {
             if (this.pool[componentName].entities.length < minComponentLenght) {
                 minComponentLenght = this.pool[componentName].entities.length;
                 minLenghtPool = this.pool[componentName];
             }
-            if (this.pool[componentName].entities.length > maxComponentLenght) {
-                maxComponentLenght = this.pool[componentName].entities.length;
-                maxLenghtPool = this.pool[componentName];
-            }
         }
+
         if (minLenghtPool.entities.length == 0) {
             return [];
         }
 
-        if(this.aspectMasksExcluede[type]) {
-            for (const entity of maxLenghtPool.entities) { 
-                for (let i = 0; i < this.entitiesMask[entity].length; i++) {            
-                    if ((this.entitiesMask[entity][i] & this.aspectMasksIncluede[type][i]) != this.aspectMasksIncluede[type][i]) {
-                        break;
-                    }
-                    
-                    if (((this.entitiesMask[entity][i] & this.aspectMasksExcluede[type][i]) == this.aspectMasksExcluede[type][i])) {
+        for (const entity of minLenghtPool.entities) {
+            var entityMask = new Uint32Array(this.entitiesMask[entity]);    
+            for (let i = 0; i < Math.ceil(this.componentsCount / 32); i++) { 
+                if(this.aspectMasksExcluede[type]) {
+                    if (((entityMask[i] & this.aspectMasksExcluede[type][i]) == entityMask[i])) {
                         break;
                     }
                 }
-                entites.push(entity)
-            }                    
-        } else {
-            for (const entity of minLenghtPool.entities) {      
-                for (let i = 0; i < this.entitiesMask[entity].length; i++) {            
-                    if ((this.entitiesMask[entity][i] & this.aspectMasksIncluede[type][i]) != this.aspectMasksIncluede[type][i]) {               
-                        break;
-                    }                                   
+                if ((entityMask[i] & this.aspectMasksIncluede[type][i]) != entityMask[i]) {
+                    break;
                 }
-                entites.push(entity)           
             }
-
-        }
+            entites.push(entity)
+        }               
 
         return entites;
     }

@@ -37,7 +37,10 @@ for (let i = 0; i < 500000; i++) {
 
 console.log(world)
 
+
+
 setInterval(() => {
+
     for (const e of world.Where(Aspect1.name)) {
         a1.ts1.Get(e).test1++;
         a1.ts2.Get(e).test2++;
