@@ -6,7 +6,7 @@
 
   var gx = 0, gy = 0.1;
 
-  const count = ref(1);
+  const count = ref(0);
   const cv = useTemplateRef('cv');
   const gl = ref(null);
   var points = new Float32Array(count.value * 4);

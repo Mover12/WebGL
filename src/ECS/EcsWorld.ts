@@ -1,4 +1,5 @@
 import { IEcsPool } from "./EcsPool";
+import { Iterator } from "./Iterator";
 
 class EcsWorld {
     pool: Map<string, IEcsPool> = new Map<string, IEcsPool>();
@@ -7,24 +8,23 @@ class EcsWorld {
     componentsCount: number = 0;
     aspectMasksIncluede: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
     aspectMasksExcluede: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
-    entitiesMask: ArrayBuffer[] = new Array<ArrayBuffer>();
+    entitiesMask: DataView[] = new Array<DataView>();
     entitiesCount: number = 0;
 
     
     
     NewEntity(): number {
-        this.entitiesMask[this.entitiesCount] = new ArrayBuffer(Math.ceil(this.componentsCount / 32) * 4);
+        this.entitiesMask[this.entitiesCount] = new DataView(new ArrayBuffer(Math.ceil(this.componentsCount / 32) * 4));
         return this.entitiesCount++;
     }
 
     Where(type: string): Array<number>{
-        var entites = [];
-     
+        let entites = [];
 
-        var minLenghtPool: IEcsPool = this.pool[this.aspects[type][0]];
-        var minComponentLenght: number = this.pool[this.aspects[type][0]].entities.length;
+        let minLenghtPool: IEcsPool = this.pool[this.aspects[type][0]];
+        let minComponentLenght: number = this.pool[this.aspects[type][0]].entities.length;
 
-        for (const componentName of this.aspects[type]) {
+        for (let componentName of this.aspects[type]) {
             if (this.pool[componentName].entities.length < minComponentLenght) {
                 minComponentLenght = this.pool[componentName].entities.length;
                 minLenghtPool = this.pool[componentName];
@@ -35,19 +35,19 @@ class EcsWorld {
             return [];
         }
 
-        for (const entity of minLenghtPool.entities) {
-            var entityMask = new Uint32Array(this.entitiesMask[entity]);    
-            for (let i = 0; i < Math.ceil(this.componentsCount / 32); i++) { 
-                if(this.aspectMasksExcluede[type]) {
-                    if (((entityMask[i] & this.aspectMasksExcluede[type][i]) == entityMask[i])) {
-                        break;
-                    }
+        const aspectMaskIncluede = this.aspectMasksIncluede[type];
+        const aspectMaskExcluede = this.aspectMasksExcluede[type];
+
+        loop: for (var entity of minLenghtPool.entities) {
+            for (let i = 0; i < Math.max(this.aspectMasksIncluede[type].byteLength, this.aspectMasksExcluede[type].byteLength) / 4; i++) {
+                if (~this.entitiesMask[entity].getUint32(i) & aspectMaskIncluede.getUint32(i)) {
+                    continue loop;
                 }
-                if ((entityMask[i] & this.aspectMasksIncluede[type][i]) != entityMask[i]) {
-                    break;
+                if (this.entitiesMask[entity].getUint32(i) & aspectMaskExcluede.getUint32(i)) {
+                    continue loop;
                 }
             }
-            entites.push(entity)
+            entites.push(entity);
         }               
 
         return entites;

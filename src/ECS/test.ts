@@ -19,7 +19,7 @@ class Aspect1 extends EcsAspect {
     ts1: EcsPool<TestComponent1> = this.Incluede(TestComponent1);
     ts2: EcsPool<TestComponent2> = this.Incluede(TestComponent2);
     ts3: EcsPool<TestComponent3> = this.Incluede(TestComponent3);
-    ts4: EcsPool<TestComponent4> = this.Incluede(TestComponent4);   
+    ts4: EcsPool<TestComponent4> = this.Incluede(TestComponent4);
 }
 
 var world = new EcsWorld;
@@ -37,11 +37,19 @@ for (let i = 0; i < 500000; i++) {
 
 console.log(world)
 
-
-
 setInterval(() => {
-
-    for (const e of world.Where(Aspect1.name)) {
+    // for (let i = 0; i < 500000; i++) {
+    //     const v = new Uint32Array(buffer);
+    //     v[0]++;
+    // }
+    // for (let i = 0; i < 50000; i++) {
+    //     let e = world.Where(Aspect1.name);
+    //     a1.ts1.Get(e).test1++;
+    //     a1.ts2.Get(e).test2++;
+    //     a1.ts3.Get(e).test3++;
+    //     a1.ts4.Get(e).test4++;
+    // }
+    for (let e of world.Where(Aspect1.name)) {
         a1.ts1.Get(e).test1++;
         a1.ts2.Get(e).test2++;
         a1.ts3.Get(e).test3++;
