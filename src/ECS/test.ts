@@ -26,8 +26,7 @@ var world = new EcsWorld;
 
 var a1 = new Aspect1(world);
 
-
-for (let i = 0; i < 500000; i++) {
+for (let i = 0; i < 1; i++) {
     var e = world.NewEntity();
     a1.ts1.Add(e);
     a1.ts2.Add(e);
@@ -38,17 +37,6 @@ for (let i = 0; i < 500000; i++) {
 console.log(world)
 
 setInterval(() => {
-    // for (let i = 0; i < 500000; i++) {
-    //     const v = new Uint32Array(buffer);
-    //     v[0]++;
-    // }
-    // for (let i = 0; i < 50000; i++) {
-    //     let e = world.Where(Aspect1.name);
-    //     a1.ts1.Get(e).test1++;
-    //     a1.ts2.Get(e).test2++;
-    //     a1.ts3.Get(e).test3++;
-    //     a1.ts4.Get(e).test4++;
-    // }
     for (let e of world.Where(Aspect1.name)) {
         a1.ts1.Get(e).test1++;
         a1.ts2.Get(e).test2++;

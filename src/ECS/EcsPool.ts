@@ -9,15 +9,17 @@ interface IEcsPool {
 
 class EcsPool<T> {   
     _world: EcsWorld;
-    entities: number[] = [];
+    type: any;
     items: T[] = [];
     mapping: number[] = [];
-    recycledItems: number[] = []; 
-    type: any;
+    recycledItems: number[] = [];
+    entities: number[] = [];
+
     constructor(world: EcsWorld, type: {prototype: T}) {
         this._world = world;
-        this.type = type;       
+        this.type = type;   
     }
+
     Add(entityID : number) {
         let itemIndex = this.items.length;
         if(this.recycledItems.length > 0) {
@@ -27,18 +29,16 @@ class EcsPool<T> {
         this.mapping[entityID] = itemIndex;
         this.entities.push(entityID);
         this.items[itemIndex] = new this.type;
-        const entityMask = this._world.entitiesMask[entityID];
-        const index = Math.floor(this._world.components[this.type.name] / 32);
-        entityMask.setUint32(index, entityMask.getUint32(index) | (1 << (this._world.components[this.type.name] % 32)));
+
+        this._world.entitiesMask[entityID * this._world.entityMaskOffset + Math.floor(this._world.components[this.type.name] / 32)] |= (1 << (this._world.components[this.type.name] % 32));
     }
 
     Del(entityID : number) {
         this.recycledItems.push(this.mapping[entityID]);
         delete this.items[this.mapping[entityID]];
         delete this.entities[entityID];
-        const entityMask = this._world.entitiesMask[entityID];
-        const index = Math.floor(this._world.components[this.type.name] / 32);
-        entityMask.setUint32(index, entityMask.getUint32(index) & ~(1 << (this._world.components[this.type.name] % 32)));
+
+        this._world.entitiesMask[entityID * this._world.entityMaskOffset + Math.floor(this._world.components[this.type.name] / 32)] &= ~(1 << (this._world.components[this.type.name] % 32));
     }
 
     Get(entityID : number) : T {

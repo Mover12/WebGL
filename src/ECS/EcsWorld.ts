@@ -1,20 +1,24 @@
+import { EcsAspect } from "./EcsAspect";
 import { IEcsPool } from "./EcsPool";
 import { Iterator } from "./Iterator";
 
 class EcsWorld {
     pool: Map<string, IEcsPool> = new Map<string, IEcsPool>();
     components: Map<string, number> = new Map<string, number>();
-    aspects: Map<string, Array<string>> = new Map<string, Array<string>>();
     componentsCount: number = 0;
-    aspectMasksIncluede: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
-    aspectMasksExcluede: Map<string, ArrayBuffer> = new Map<string, ArrayBuffer>();
-    entitiesMask: DataView[] = new Array<DataView>();
-    entitiesCount: number = 0;
 
-    
+    aspects: Map<string, Array<string>> = new Map<string, Array<string>>();
+    aspectMasksMapping: Map<string, number> = new Map<string, number>();
+    aspectsMaskIncluede: Uint32Array = new Uint32Array(new ArrayBuffer(0, { maxByteLength: 16 }));
+    aspectsMaskExcluede: Uint32Array = new Uint32Array(new ArrayBuffer(0, { maxByteLength: 16 }));
+
+    entitiesCount: number = 0;
+    entitiesMask: Uint32Array = new Uint32Array(new ArrayBuffer(0, { maxByteLength: 2000000 }));
+    entityMaskOffset: number = 0;
     
     NewEntity(): number {
-        this.entitiesMask[this.entitiesCount] = new DataView(new ArrayBuffer(Math.ceil(this.componentsCount / 32) * 4));
+        this.entityMaskOffset = Math.ceil(this.componentsCount / 32);
+        this.entitiesMask.buffer.resize(this.entitiesMask.buffer.byteLength + this.entityMaskOffset * 4);
         return this.entitiesCount++;
     }
 
@@ -35,15 +39,12 @@ class EcsWorld {
             return [];
         }
 
-        const aspectMaskIncluede = this.aspectMasksIncluede[type];
-        const aspectMaskExcluede = this.aspectMasksExcluede[type];
-
         loop: for (var entity of minLenghtPool.entities) {
-            for (let i = 0; i < Math.max(this.aspectMasksIncluede[type].byteLength, this.aspectMasksExcluede[type].byteLength) / 4; i++) {
-                if (~this.entitiesMask[entity].getUint32(i) & aspectMaskIncluede.getUint32(i)) {
+            for (let i = this.aspectMasksMapping[type][0]; i < this.aspectMasksMapping[type][1] / 4; i++) {
+                if (~this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskIncluede[i]) {
                     continue loop;
                 }
-                if (this.entitiesMask[entity].getUint32(i) & aspectMaskExcluede.getUint32(i)) {
+                if (this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskExcluede[i]) {
                     continue loop;
                 }
             }
