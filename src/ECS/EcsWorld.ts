@@ -22,9 +22,7 @@ class EcsWorld {
         return this.entitiesCount++;
     }
 
-    Where(type: string): Array<number>{
-        let entites = [];
-
+    Where(type: string) {
         let minLenghtPool: IEcsPool = this.pool[this.aspects[type][0]];
         let minComponentLenght: number = this.pool[this.aspects[type][0]].entities.length;
 
@@ -39,7 +37,9 @@ class EcsWorld {
             return [];
         }
 
-        loop: for (var entity of minLenghtPool.entities) {
+        var entities = new Iterator(minLenghtPool.entities);
+        loop: for (;;) {
+            var entity = entities.next();
             for (let i = this.aspectMasksMapping[type][0]; i < this.aspectMasksMapping[type][1] / 4; i++) {
                 if (~this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskIncluede[i]) {
                     continue loop;
@@ -48,10 +48,23 @@ class EcsWorld {
                     continue loop;
                 }
             }
-            entites.push(entity);
-        }               
+            return entity;
+        }
 
-        return entites;
+        // let entities = [];
+        // loop: for (var entity of minLenghtPool.entities) {
+        //     for (let i = this.aspectMasksMapping[type][0]; i < this.aspectMasksMapping[type][1] / 4; i++) {
+        //         if (~this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskIncluede[i]) {
+        //             continue loop;
+        //         }
+        //         if (this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskExcluede[i]) {
+        //             continue loop;
+        //         }
+        //     }
+        //     entities.push(entity);
+        // }               
+
+        // return entities;
     }
         
 };

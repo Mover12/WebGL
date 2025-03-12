@@ -2,7 +2,7 @@
   import { ref, useTemplateRef, onMounted, watch } from 'vue';
   import vert from '../shaders/vert.glsl';
   import frag from '../shaders/frag.glsl';
-  import '../ECS/test'
+  import '../game/test'
 
   var gx = 0, gy = 0.1;
 

@@ -1,16 +1,20 @@
-import { EcsAspect } from "./EcsAspect";
-import { EcsPool } from "./EcsPool";
-import { EcsWorld } from "./EcsWorld";
+import { EcsAspect } from "@/ECS/EcsAspect";
+import { EcsWorld } from "../ECS/EcsWorld";
+import Aspect64 from "./components";
+import { EcsPool } from "@/ECS/EcsPool";
 
 class TestComponent1 {
     test1: number = 0;
 }
+
 class TestComponent2 {
     test2: number = 0;
 }
+
 class TestComponent3 {
     test3: number = 0;
 }
+
 class TestComponent4 {
     test4: number = 0;
 }
@@ -22,11 +26,12 @@ class Aspect1 extends EcsAspect {
     ts4: EcsPool<TestComponent4> = this.Incluede(TestComponent4);
 }
 
+
 var world = new EcsWorld;
 
 var a1 = new Aspect1(world);
 
-for (let i = 0; i < 1; i++) {
+for (let i = 0; i < 500000; i++) {
     var e = world.NewEntity();
     a1.ts1.Add(e);
     a1.ts2.Add(e);
@@ -37,7 +42,14 @@ for (let i = 0; i < 1; i++) {
 console.log(world)
 
 setInterval(() => {
-    for (let e of world.Where(Aspect1.name)) {
+    // for (let e of world.Where(Aspect1.name)) {
+    //     a1.ts1.Get(e).test1++;
+    //     a1.ts2.Get(e).test2++;
+    //     a1.ts3.Get(e).test3++;
+    //     a1.ts4.Get(e).test4++;
+    // }
+
+    for (let e; e = world.Where(Aspect1.name);) {
         a1.ts1.Get(e).test1++;
         a1.ts2.Get(e).test2++;
         a1.ts3.Get(e).test3++;
