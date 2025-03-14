@@ -1,5 +1,4 @@
 import { IEcsPool } from "./EcsPool";
-import { IIterator, Iterator} from "./Iterator";
 
 class EcsWorld {
     public pool: Map<string, IEcsPool>;
@@ -13,6 +12,7 @@ class EcsWorld {
 
     public entitiesMask: Uint32Array;
     public entityMaskSize: number
+    private recycledEntities: Array<number>;
     private entitiesCount: number;
 
     constructor(options: { maxEntityCount: 1024, aspectsMaskSize: 1024} = { maxEntityCount: 1024, aspectsMaskSize: 1024}) {
@@ -27,10 +27,12 @@ class EcsWorld {
     
         this.entitiesMask = new Uint32Array(new ArrayBuffer(0, { maxByteLength: options.maxEntityCount * 4 }));
         this.entitiesCount = 0;
+        this.recycledEntities = [];
         this.entityMaskSize = 0;
     }
     
     public NewEntity(): number {
+        if (this.recycledEntities.length > 0) return this.recycledEntities.pop();
         this.entityMaskSize = (this.components.size >> 5) + 1;
         this.entitiesMask.buffer.resize(this.entitiesMask.buffer.byteLength + this.entityMaskSize * 4);
         return this.entitiesCount++;

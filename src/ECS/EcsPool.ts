@@ -27,26 +27,26 @@ class EcsPool<T> {
         this.entities = [];
     }
 
-    public Add(entityID: number): void {
+    public Add(entity: number): void {
         let itemIndex = this.items.length;
         if(this.recycledItems.length > 0) {
             itemIndex = this.recycledItems[this.recycledItems.length - 1];
             this.recycledItems.pop();
         }
 
-        this.mapping[entityID] = itemIndex;
-        this.entities[entityID] = entityID;
+        this.mapping[entity] = itemIndex;
+        this.entities[entity] = entity;
         this.items[itemIndex] = new this.type;
 
-        this._world.entitiesMask[this._world.components[this.type.name] >> 5 + entityID * this._world.entityMaskSize] |= (1 << this._world.components[this.type.name] % 32);
+        this._world.entitiesMask[this._world.components[this.type.name] >> 5 + entity * this._world.entityMaskSize] |= (1 << this._world.components[this.type.name] % 32);
     }
 
-    public Del(entityID: number): void {
-        this.recycledItems.push(this.mapping[entityID]);
-        delete this.items[this.mapping[entityID]];
-        delete this.entities[entityID];
+    public Del(entity: number): void {
+        this.recycledItems.push(this.mapping[entity]);
+        delete this.items[this.mapping[entity]];
+        delete this.entities[entity];
 
-        this._world.entitiesMask[this._world.components[this.type.name] >> 5 + entityID * this._world.entityMaskSize] &= ~(1 << this._world.components[this.type.name] % 32);
+        this._world.entitiesMask[this._world.components[this.type.name] >> 5 + entity * this._world.entityMaskSize] &= ~(1 << this._world.components[this.type.name] % 32);
     }
 
     public Get(entityID: number) : T {
