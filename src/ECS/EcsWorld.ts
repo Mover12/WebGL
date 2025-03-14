@@ -1,72 +1,40 @@
-import { EcsAspect } from "./EcsAspect";
 import { IEcsPool } from "./EcsPool";
-import { Iterator } from "./Iterator";
+import { IIterator, Iterator} from "./Iterator";
 
 class EcsWorld {
-    pool: Map<string, IEcsPool> = new Map<string, IEcsPool>();
-    components: Map<string, number> = new Map<string, number>();
-    componentsCount: number = 0;
+    public pool: Map<string, IEcsPool>;
+    public components: Map<string, number>;
+    public componetsCount: number;
 
-    aspects: Map<string, Array<string>> = new Map<string, Array<string>>();
-    aspectMasksMapping: Map<string, number> = new Map<string, number>();
-    aspectsMaskIncluede: Uint32Array = new Uint32Array(new ArrayBuffer(0, { maxByteLength: 16 }));
-    aspectsMaskExcluede: Uint32Array = new Uint32Array(new ArrayBuffer(0, { maxByteLength: 16 }));
+    public aspectComponets: Map<string, Array<string>>;
+    public aspectMasksMapping: Map<string, Array<number>>;
+    public aspectsMaskIncluede: Uint32Array;
+    public aspectsMaskExcluede: Uint32Array;
 
-    entitiesCount: number = 0;
-    entitiesMask: Uint32Array = new Uint32Array(new ArrayBuffer(0, { maxByteLength: 2000000 }));
-    entityMaskOffset: number = 0;
+    public entitiesMask: Uint32Array;
+    public entityMaskSize: number
+    private entitiesCount: number;
+
+    constructor(options: { maxEntityCount: 1024, aspectsMaskSize: 1024} = { maxEntityCount: 1024, aspectsMaskSize: 1024}) {
+        this.pool = new Map<string, IEcsPool>();
+        this.components = new Map<string, number>();
+        this.componetsCount = 0;
     
-    NewEntity(): number {
-        this.entityMaskOffset = Math.ceil(this.componentsCount / 32);
-        this.entitiesMask.buffer.resize(this.entitiesMask.buffer.byteLength + this.entityMaskOffset * 4);
+        this.aspectComponets = new Map<string, Array<string>>();
+        this.aspectMasksMapping = new Map<string, Array<number>>();
+        this.aspectsMaskIncluede = new Uint32Array(new ArrayBuffer(0, { maxByteLength: options.aspectsMaskSize }));
+        this.aspectsMaskExcluede = new Uint32Array(new ArrayBuffer(0, { maxByteLength: options.aspectsMaskSize }));
+    
+        this.entitiesMask = new Uint32Array(new ArrayBuffer(0, { maxByteLength: options.maxEntityCount * 4 }));
+        this.entitiesCount = 0;
+        this.entityMaskSize = 0;
+    }
+    
+    public NewEntity(): number {
+        this.entityMaskSize = (this.components.size >> 5) + 1;
+        this.entitiesMask.buffer.resize(this.entitiesMask.buffer.byteLength + this.entityMaskSize * 4);
         return this.entitiesCount++;
     }
-
-    Where(type: string) {
-        let minLenghtPool: IEcsPool = this.pool[this.aspects[type][0]];
-        let minComponentLenght: number = this.pool[this.aspects[type][0]].entities.length;
-
-        for (let componentName of this.aspects[type]) {
-            if (this.pool[componentName].entities.length < minComponentLenght) {
-                minComponentLenght = this.pool[componentName].entities.length;
-                minLenghtPool = this.pool[componentName];
-            }
-        }
-
-        if (minLenghtPool.entities.length == 0) {
-            return [];
-        }
-
-        var entities = new Iterator(minLenghtPool.entities);
-        loop: for (;;) {
-            var entity = entities.next();
-            for (let i = this.aspectMasksMapping[type][0]; i < this.aspectMasksMapping[type][1] / 4; i++) {
-                if (~this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskIncluede[i]) {
-                    continue loop;
-                }
-                if (this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskExcluede[i]) {
-                    continue loop;
-                }
-            }
-            return entity;
-        }
-
-        // let entities = [];
-        // loop: for (var entity of minLenghtPool.entities) {
-        //     for (let i = this.aspectMasksMapping[type][0]; i < this.aspectMasksMapping[type][1] / 4; i++) {
-        //         if (~this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskIncluede[i]) {
-        //             continue loop;
-        //         }
-        //         if (this.entitiesMask[entity * this.entityMaskOffset] & this.aspectsMaskExcluede[i]) {
-        //             continue loop;
-        //         }
-        //     }
-        //     entities.push(entity);
-        // }               
-
-        // return entities;
-    }
-        
 };
 
 export { EcsWorld };

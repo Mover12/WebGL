@@ -1,24 +1,30 @@
-class Iterator<T> {
-    data: T;
-    currentElement: any;
-    static index: number = 0;
+interface IIterator {
+    begin(): void;
+    next();
+    end(): void;
+};
+
+class Iterator<T extends { length: number }> {
+    private data: T;
+    private static index: number;
+    
     constructor(data: T) {
         this.data = data;
-    }
-    begin() {
         Iterator.index = 0;
     }
-    next() {
-        this.currentElement = this.data[Iterator.index++];
-        if (Iterator.index >= this.data.length) {
-            this.begin();
-            return null;
-        }
-        return this.currentElement;
+
+    public begin(index: number = 0): void {
+        Iterator.index = index;
     }
-    end() {
+
+    public next() {
+        if (Iterator.index >= this.data.length) return null;
+        return this.data[Iterator.index++];
+    }
+
+    public end(): void {
         Iterator.index = this.data.length - 1;
     }
-}
+};
 
-export { Iterator }
+export { IIterator, Iterator };
