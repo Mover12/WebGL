@@ -3,6 +3,7 @@ import { EcsWorld } from "./EcsWorld";
 interface IEcsPool {
     type: any;
     entities: number[];
+    id: number;
 
     Add(): void;
     Del(): void;
@@ -18,13 +19,19 @@ class EcsPool<T> {
     public items: T[];
     public entities: number[];
 
-    constructor(world: EcsWorld, type: { prototype: T }) {
+    public id: number;
+
+    constructor(world: EcsWorld, type: classType) {
         this._world = world;
         this.type = type;
         this.items = [];
         this.mapping = [];
         this.recycledItems = [];
         this.entities = [];
+
+        this.id = this._world.componetsCount++;
+        this._world.poolMapping[type.name] = this.id;
+        this._world.pool.push(this);
     }
 
     public Add(entity: number): void {
@@ -38,7 +45,7 @@ class EcsPool<T> {
         this.entities[entity] = entity;
         this.items[itemIndex] = new this.type;
 
-        this._world.entitiesMask[(this._world.components[this.type.name] >> 5) + entity * this._world.entityMaskSize] |= (1 << this._world.components[this.type.name] % 32);
+        this._world.entitiesMask[(this.id >> 5) + entity * this._world.entityMaskSize] |= (1 << this.id % 32);
     }
 
     public Del(entity: number): void {
@@ -46,7 +53,7 @@ class EcsPool<T> {
         delete this.items[this.mapping[entity]];
         delete this.entities[entity];
 
-        this._world.entitiesMask[(this._world.components[this.type.name] >> 5) + entity * this._world.entityMaskSize] &= ~(1 << this._world.components[this.type.name] % 32);
+        this._world.entitiesMask[(this.id >> 5) + entity * this._world.entityMaskSize] &= ~(1 << this.id % 32);
     }
 
     public Get(entityID: number) : T {
