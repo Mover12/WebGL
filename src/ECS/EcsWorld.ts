@@ -30,16 +30,21 @@ class EcsWorld {
         this.entityMaskSize = 0;
 
         this.systems = new Array<EcsSystem>();
-        setInterval(() => {
-            for (const system of this.systems) system.Update();
-        }, 1 / 60);
+        this.Update();
     }
-    
+
     public NewEntity(): number {
         if (this.recycledEntities.length > 0) return this.recycledEntities.pop();
         this.entityMaskSize = (this.componetsCount >> 5) + 1;
         this.entitiesMask.buffer.resize(this.entitiesMask.buffer.byteLength + this.entityMaskSize * 4);
         return this.entitiesCount++;
+    }
+
+    private Update() {
+        requestAnimationFrame(() => {
+            for (const system of this.systems) system.Update();
+            this.Update();
+        })
     }
 };
 
