@@ -10,13 +10,13 @@ interface IEcsPool {
 };
 
 class EcsPool<T> {
-    public type: any;
-    public items: T[];
-    public entities: number[];
-
     private _world: EcsWorld;
     private mapping: number[];
     private recycledItems: number[];
+
+    public type: any;
+    public items: T[];
+    public entities: number[];
 
     constructor(world: EcsWorld, type: { prototype: T }) {
         this._world = world;
@@ -38,7 +38,7 @@ class EcsPool<T> {
         this.entities[entity] = entity;
         this.items[itemIndex] = new this.type;
 
-        this._world.entitiesMask[this._world.components[this.type.name] >> 5 + entity * this._world.entityMaskSize] |= (1 << this._world.components[this.type.name] % 32);
+        this._world.entitiesMask[(this._world.components[this.type.name] >> 5) + entity * this._world.entityMaskSize] |= (1 << this._world.components[this.type.name] % 32);
     }
 
     public Del(entity: number): void {
@@ -46,7 +46,7 @@ class EcsPool<T> {
         delete this.items[this.mapping[entity]];
         delete this.entities[entity];
 
-        this._world.entitiesMask[this._world.components[this.type.name] >> 5 + entity * this._world.entityMaskSize] &= ~(1 << this._world.components[this.type.name] % 32);
+        this._world.entitiesMask[(this._world.components[this.type.name] >> 5) + entity * this._world.entityMaskSize] &= ~(1 << this._world.components[this.type.name] % 32);
     }
 
     public Get(entityID: number) : T {

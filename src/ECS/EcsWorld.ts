@@ -5,8 +5,6 @@ class EcsWorld {
     public components: Map<string, number>;
     public componetsCount: number;
 
-    public aspectComponets: Map<string, Array<string>>;
-    public aspectMasksMapping: Map<string, Array<number>>;
     public aspectsMaskIncluede: Uint32Array;
     public aspectsMaskExcluede: Uint32Array;
 
@@ -20,8 +18,6 @@ class EcsWorld {
         this.components = new Map<string, number>();
         this.componetsCount = 0;
     
-        this.aspectComponets = new Map<string, Array<string>>();
-        this.aspectMasksMapping = new Map<string, Array<number>>();
         this.aspectsMaskIncluede = new Uint32Array(new ArrayBuffer(0, { maxByteLength: options.aspectsMaskSize }));
         this.aspectsMaskExcluede = new Uint32Array(new ArrayBuffer(0, { maxByteLength: options.aspectsMaskSize }));
     
