@@ -75,7 +75,7 @@ class EcsAspect {
     public next() {
         loop: for(;;) {
             var entity = this.entities.next();
-            if(entity != null) {
+            if(entity != undefined) {
                 for (let i = this.start; i < this.end; i++) {
                     if (~this._world.entitiesMask[entity * this._world.entityMaskSize] & this._world.aspectsMaskIncluede[i]) {
                         continue loop;
@@ -86,7 +86,7 @@ class EcsAspect {
                 }
             }
             this.entity = entity;
-            return this.entity != null;
+            return this.entity != undefined;
         }
     }
 };

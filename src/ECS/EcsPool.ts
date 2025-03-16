@@ -5,9 +5,9 @@ interface IEcsPool {
     entities: number[];
     id: number;
 
-    Add(): void;
-    Del(): void;
-    Get(): IEcsPool;
+    Add(entity: number): void;
+    Del(entity: number): void;
+    Get(entity: number): IEcsPool;
 };
 
 class EcsPool<T> {
@@ -36,9 +36,7 @@ class EcsPool<T> {
 
     public Add(entity: number): void {
         let itemIndex = this.items.length;
-        if(this.recycledItems.length > 0) {
-            itemIndex = this.recycledItems.pop();
-        }
+        if(this.recycledItems.length > 0) itemIndex = this.recycledItems.pop();
 
         this.mapping[entity] = itemIndex;
         this.entities[entity] = entity;
@@ -54,8 +52,8 @@ class EcsPool<T> {
         this._world.entitiesMask[(this.id >> 5) + entity * this._world.entityMaskSize] &= ~(1 << this.id % 32);
     }
 
-    public Get(entityID: number) : T {
-        return this.items[this.mapping[entityID]];
+    public Get(entity: number) : T {
+        return this.items[this.mapping[entity]];
     }
 };
 

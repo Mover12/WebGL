@@ -18,7 +18,7 @@ class Iterator<T extends { length: number }> {
     }
 
     public next() {
-        if (Iterator.index >= this.data.length) return null;
+        if (Iterator.index >= this.data.length) return undefined;
         return this.data[Iterator.index++];
     }
 
