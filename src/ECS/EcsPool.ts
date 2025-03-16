@@ -37,8 +37,7 @@ class EcsPool<T> {
     public Add(entity: number): void {
         let itemIndex = this.items.length;
         if(this.recycledItems.length > 0) {
-            itemIndex = this.recycledItems[this.recycledItems.length - 1];
-            this.recycledItems.pop();
+            itemIndex = this.recycledItems.pop();
         }
 
         this.mapping[entity] = itemIndex;
@@ -50,8 +49,7 @@ class EcsPool<T> {
 
     public Del(entity: number): void {
         this.recycledItems.push(this.mapping[entity]);
-        delete this.items[this.mapping[entity]];
-        delete this.entities[entity];
+        this.entities[entity] = null;
 
         this._world.entitiesMask[(this.id >> 5) + entity * this._world.entityMaskSize] &= ~(1 << this.id % 32);
     }
