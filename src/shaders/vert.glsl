@@ -1,14 +1,14 @@
 precision lowp float;
 
-attribute vec2 coordinates;
-attribute vec2 scale;
+attribute vec2 aVetrexCoord;
+attribute vec2 vVertexTextureCord;
+varying vec2 vTextureCord;
 
 void main() {
+    vTextureCord = vVertexTextureCord;
     gl_Position = vec4(
-        coordinates.x * scale.x,
-        coordinates.y * scale.y,
+        aVetrexCoord,
         0.0,
         1.0
     );
-    gl_PointSize = 1.0;
 }

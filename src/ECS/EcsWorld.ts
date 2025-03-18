@@ -39,6 +39,7 @@ class EcsWorld {
         this.entitiesMask.buffer.resize(this.entitiesMask.buffer.byteLength + this.entityMaskSize * 4);
         return this.entitiesCount++;
     }
+    
     public DelEntity(entity: number): void {
         this.recycledEntities.push(entity);
         for (let i = 0; i < this.entityMaskSize * 32; i++) {
